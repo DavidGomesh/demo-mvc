@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/departamentos")
@@ -30,8 +31,9 @@ public class DepartamentoControlller {
     }
 
     @PostMapping("/salvar")
-    public String salvar(Departamento departamento) {
+    public String salvar(Departamento departamento, RedirectAttributes attr) {
         service.salvar(departamento);
+        attr.addFlashAttribute("success", "Departamento cadastrado com sucesso!");
         return "redirect:/departamentos/cadastrar";
     }
 
@@ -42,15 +44,19 @@ public class DepartamentoControlller {
     }
 
     @PostMapping("/editar")
-    public String editar(Departamento departamento) {
+    public String editar(Departamento departamento, RedirectAttributes attr) {
         service.editar(departamento);
+        attr.addFlashAttribute("success", "Departamento editado com sucesso!");
         return "redirect:/departamentos/cadastrar";
     }
 
     @GetMapping("/excluir/{id}")
     public String excluir(@PathVariable("id") Long id, ModelMap model) {
         if (!service.departamentoTemCargos(id)) {
+            model.addAttribute("success", "Departamento removido com sucesso!");
             service.excluir(id);
+        }else{
+            model.addAttribute("fail", "Departamento não removido, pois possui cargos vinculados!");
         }
 
         return listar(model);
